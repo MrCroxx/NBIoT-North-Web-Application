@@ -1,0 +1,39 @@
+project:
+  version: @project.version@
+
+server:
+  port: 8080
+
+
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://58.87.101.103:3306/nbiot
+    username: nbiot
+    password: nbiot100202
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  jackson:
+    serialization:
+      indent_output: true
+
+logging:
+  level:
+    org.springframework:
+      data: DEBUG
+      security: DEBUG
+
+jwt:
+    header: Authorization
+    secret: a6bcd6e36a024d847d3c915188f2ae6b5cc44e38
+    expiration: 604800
+    tokenHead: "Bearer "
+    route:
+        authentication:
+            auth: /jwt/auth
+            refresh: /jwt/refresh
+            register: /jwt/register
+
