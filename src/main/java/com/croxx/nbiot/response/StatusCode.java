@@ -1,4 +1,4 @@
-package com.croxx.nbiot.jsoncode;
+package com.croxx.nbiot.response;
 
 public class StatusCode {
     public static final int STATUS_SUCCESS = 20000;

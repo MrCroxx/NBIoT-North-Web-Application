@@ -1,11 +1,13 @@
-package com.croxx.nbiot.filter;
+package com.croxx.nbiot.request;
 
+import javax.validation.constraints.Email;
 import java.io.Serializable;
 
 public class  JwtAuthenticationRequest implements Serializable {
 
 
     private static final long serialVersionUID = -5515500817378015839L;
+    @Email
     private String username;
     private String password;
 

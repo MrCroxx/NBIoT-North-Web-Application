@@ -1,4 +1,4 @@
-package com.croxx.nbiot.filter;
+package com.croxx.nbiot.response;
 
 import java.io.Serializable;
 
