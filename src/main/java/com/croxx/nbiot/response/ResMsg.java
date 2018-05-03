@@ -5,41 +5,57 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class ResMsg<T> {
     public static final String MSG_SUCCESS = "success";
     public static final String MSG_DATA_REQUIRED = "data required";
     public static final String MSG_DATA_ILLEGAL = "data illegal";
 
-    public static String getBindErrorsMessage(BindingResult bindingResult) {
-        String msg = "";
+    public static List<String> getBindErrorsMessage(BindingResult bindingResult) {
+        List<String> msgs = new ArrayList<>();
         for (FieldError fieldError : bindingResult.getFieldErrors()) {
-            msg += "[" + fieldError.getField() + "]" + fieldError.getDefaultMessage();
+            msgs.add(fieldError.getField() + ":" + fieldError.getDefaultMessage());
         }
-        return msg;
+        return msgs;
     }
 
 
-    private String msg;
+    private List<String> msgs;
     private T content;
 
-    public ResMsg(@NotNull String msg) {
-        this.msg = msg;
+    public ResMsg(@NotNull String... msgs) {
+        this.msgs = new ArrayList<>();
+        this.msgs.addAll(Arrays.asList(msgs));
     }
 
-    public ResMsg(@NotNull String msg, @NotNull T content) {
-        this.msg = msg;
+    public ResMsg(@NotNull List<String> msgs) {
+        this.msgs = new ArrayList<>();
+        this.msgs.addAll(msgs);
+    }
+
+    public ResMsg(@NotNull T content, @NotNull String... msgs) {
+        this.msgs = new ArrayList<>();
+        this.msgs.addAll(Arrays.asList(msgs));
+        this.content = content;
+    }
+
+    public ResMsg(@NotNull T content, @NotNull List<String> msgs) {
+        this.msgs = new ArrayList<>();
+        this.msgs.addAll(msgs);
         this.content = content;
     }
 
     /*    Getters & Setters     */
 
-    public String getMsg() {
-        return msg;
+    public List<String> getMsgs() {
+        return msgs;
     }
 
-    public void setMsg(String msg) {
-        this.msg = msg;
+    public void setMsgs(List<String> msgs) {
+        this.msgs = msgs;
     }
 
     public T getContent() {

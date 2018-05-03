@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -35,11 +36,11 @@ public class AuthController {
     @ResponseBody
     public ResponseEntity<ResMsg<ResJwtAccessToken>> createAuthenticationToken(@Valid @RequestBody JwtAuthenticationRequest authenticationRequest, BindingResult bindingResult) throws AuthenticationException {
         if (bindingResult.hasErrors()) {
-            String msg = ResMsg.getBindErrorsMessage(bindingResult);
-            return ResponseEntity.badRequest().body(new ResMsg<ResJwtAccessToken>(msg));
+            List<String> msgs = ResMsg.getBindErrorsMessage(bindingResult);
+            return ResponseEntity.badRequest().body(new ResMsg<ResJwtAccessToken>(msgs));
         }
         final String token = authService.login(authenticationRequest.getUsername(), authenticationRequest.getPassword()); // Return the token
-        return ResponseEntity.ok(new ResMsg<ResJwtAccessToken>(ResMsg.MSG_SUCCESS, new ResJwtAccessToken(token)));
+        return ResponseEntity.ok(new ResMsg<ResJwtAccessToken>(new ResJwtAccessToken(token), ResMsg.MSG_SUCCESS));
     }
 
 
@@ -51,16 +52,16 @@ public class AuthController {
         if (refreshedToken == null) {
             return ResponseEntity.badRequest().body(new ResMsg<ResJwtAccessToken>(ResMsg.MSG_DATA_ILLEGAL));
         } else {
-            return ResponseEntity.ok(new ResMsg<ResJwtAccessToken>(ResMsg.MSG_SUCCESS, new ResJwtAccessToken(refreshedToken)));
+            return ResponseEntity.ok(new ResMsg<ResJwtAccessToken>(new ResJwtAccessToken(refreshedToken), ResMsg.MSG_SUCCESS));
         }
     }
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity<ResMsg> register(@Valid @RequestBody JwtRegisterRequest reqUser,BindingResult bindingResult) throws AuthenticationException {
+    public ResponseEntity<ResMsg> register(@Valid @RequestBody JwtRegisterRequest reqUser, BindingResult bindingResult) throws AuthenticationException {
         if (bindingResult.hasErrors()) {
-            String msg = ResMsg.getBindErrorsMessage(bindingResult);
-            return ResponseEntity.badRequest().body(new ResMsg(msg));
+            List<String> msgs = ResMsg.getBindErrorsMessage(bindingResult);
+            return ResponseEntity.badRequest().body(new ResMsg(msgs));
         }
         User user = new User(reqUser.getEmail(), reqUser.getPassword(), reqUser.getName());
         User addedUser = authService.register(user);
