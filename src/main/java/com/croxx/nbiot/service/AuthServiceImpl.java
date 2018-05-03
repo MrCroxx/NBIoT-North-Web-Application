@@ -1,10 +1,9 @@
 package com.croxx.nbiot.service;
 
 import com.croxx.nbiot.model.JwtUser;
-import com.croxx.nbiot.model.Role;
 import com.croxx.nbiot.model.User;
 import com.croxx.nbiot.model.UserRepository;
-import com.croxx.nbiot.util.JwtTokenUtil;
+import com.croxx.nbiot.component.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -47,7 +46,7 @@ public class AuthServiceImpl implements AuthService {
         final String rawPassword = userToAdd.getPassword();
         userToAdd.setPassword(encoder.encode(rawPassword));
         userToAdd.setLastPasswordResetDate(new Date());
-        userToAdd.setRoles(Arrays.asList(Role.ROLE_USER));
+        userToAdd.setRoles(Arrays.asList(User.ROLE_USER));
         return userRepository.save(userToAdd);
     }
 

@@ -1,4 +1,4 @@
-package com.croxx.nbiot.util;
+package com.croxx.nbiot.component;
 
 
 import com.croxx.nbiot.model.JwtUser;

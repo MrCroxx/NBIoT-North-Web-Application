@@ -29,11 +29,13 @@ logging:
 jwt:
     header: Authorization
     secret: a6bcd6e36a024d847d3c915188f2ae6b5cc44e38
-    expiration: 604800
+    expiration: 43200
     tokenHead: "Bearer "
-    route:
-        authentication:
-            auth: /jwt/auth
-            refresh: /jwt/refresh
-            register: /jwt/register
 
+
+nbiot:
+  appId: cb8ea299-122c-40d2-a323-d4690a313da7
+  secret: 1843e98abdf843b86b69
+  platform:
+    host: 218.4.33.71
+    port: 8743

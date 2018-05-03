@@ -108,6 +108,19 @@
             <artifactId>jaxb-core</artifactId>
             <version>2.3.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.5</version>
+        </dependency>
+        <dependency>
+            <groupId>com.huawei.iotplatform</groupId>
+            <artifactId>client</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+
+
 
 
     </dependencies>
@@ -118,7 +131,9 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+
         </plugins>
+
     </build>
 
 

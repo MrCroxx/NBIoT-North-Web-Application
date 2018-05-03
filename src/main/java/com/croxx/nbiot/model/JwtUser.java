@@ -18,6 +18,7 @@ public class JwtUser implements UserDetails {
     private final Date lastPasswordResetDate;
     private final List<String> roles;
 
+
     public JwtUser(Long id, String email, String password, String name, Date lastPasswordResetDate, List<String> roles) {
         this.id = id;
         this.name = name;
@@ -25,6 +26,14 @@ public class JwtUser implements UserDetails {
         this.email = email;
         this.lastPasswordResetDate = lastPasswordResetDate;
         this.roles = roles;
+    }
+    public JwtUser(User user){
+        this.id = user.getId();
+        this.name = user.getName();
+        this.password = user.getPassword();
+        this.email = user.getEmail();
+        this.lastPasswordResetDate = user.getLastPasswordResetDate();
+        this.roles = user.getRoles();
     }
 
     //返回分配给用户的角色列表
@@ -85,4 +94,5 @@ public class JwtUser implements UserDetails {
     public Date getLastPasswordResetDate() {
         return lastPasswordResetDate;
     }
+
 }

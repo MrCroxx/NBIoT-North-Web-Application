@@ -1,7 +1,7 @@
 package com.croxx.nbiot.filter;
 
 import com.croxx.nbiot.service.JwtUserDetailsService;
-import com.croxx.nbiot.util.JwtTokenUtil;
+import com.croxx.nbiot.component.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -33,7 +33,6 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         String authHeader = request.getHeader(this.tokenHeader);
         if (authHeader != null && authHeader.startsWith(tokenHead)) {
             final String authToken = authHeader.substring(tokenHead.length());
-            // The part after "Bearer "
             String username = jwtTokenUtil.getUsernameFromToken(authToken);
             logger.info("checking authentication " + username);
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
@@ -41,7 +40,6 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
                 if (jwtTokenUtil.validateToken(authToken, userDetails)) {
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    logger.info("authenticated user " + username + ", setting security context");
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
             }

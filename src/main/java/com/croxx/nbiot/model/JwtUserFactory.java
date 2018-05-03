@@ -5,6 +5,10 @@ public final class JwtUserFactory {
     }
 
     public static JwtUser create(User user) {
-        return new JwtUser(user.getId(),user.getEmail(),user.getPassword(),user.getName(),user.getLastPasswordResetDate(),user.getRoles());
+        //return new JwtUser(user.getId(),user.getEmail(),user.getPassword(),user.getName(),user.getLastPasswordResetDate(),user.getRoles());
+        return new JwtUser(user);
     }
+
+
+
 }
