@@ -11,6 +11,7 @@ import com.huawei.iotplatform.client.dto.RegDirectDeviceInDTO;
 import com.huawei.iotplatform.client.dto.RegDirectDeviceOutDTO;
 import com.huawei.iotplatform.client.invokeapi.DeviceManagement;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
@@ -34,6 +35,16 @@ public class NBIoTDeviceService {
     private NBIoTAuthService nbIoTAuthService;
     @Autowired
     private DeviceRepository deviceRepository;
+    @Value("${device.deviceType}")
+    private String deviceType;
+    @Value("${device.model}")
+    private String model;
+    @Value("${device.manufacturerId}")
+    private String manufacturerId;
+    @Value("${device.manufacturerName}")
+    private String manufacturerName;
+    @Value("${device.protocolType}")
+    private String protocolType;
 
     public String RegistDevice(@NotNull ReqNewDevice reqNewDevice, @NotNull User owner) {
         try {
@@ -49,10 +60,15 @@ public class NBIoTDeviceService {
             if (deviceRepository.findDeviceByDeviceId(deviceId) != null) {
                 return REGISTER_DEVICEID_EXISTS;
             }
-            Device addedDevice = new Device(deviceId, owner, name);
+            Device addedDevice = new Device(nodeId, deviceId, owner, name);
             ModifyDeviceInfoInDTO mdiid = new ModifyDeviceInfoInDTO();
             mdiid.setName(name);
             mdiid.setDeviceId(deviceId);
+            mdiid.setDeviceType(deviceType);
+            mdiid.setModel(model);
+            mdiid.setManufacturerId(manufacturerId);
+            mdiid.setManufacturerName(manufacturerName);
+            mdiid.setProtocolType(protocolType);
             deviceManagement.modifyDeviceInfo(mdiid, nbIoTService.getAppId(), nbIoTAuthService.getAccessToken());
             deviceRepository.save(addedDevice);
             return rddod.getDeviceId();

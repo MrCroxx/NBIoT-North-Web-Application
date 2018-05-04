@@ -12,6 +12,8 @@ public class Device {
     @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "owner_id")
     private User owner;
+    @Column(nullable = false,unique = true)
+    private String nodeId;
     @Column(nullable = false, unique = true)
     private String deviceId;
     @Column(nullable = false)
@@ -20,9 +22,9 @@ public class Device {
     public Device() {
     }
 
-    public Device(@NotNull String deviceId, @NotNull User owner,@NotNull String name) {
+    public Device(@NotNull String nodeId,@NotNull String deviceId, @NotNull User owner,@NotNull String name) {
+        this.nodeId = nodeId;
         this.owner = owner;
-        this.deviceId = deviceId;
         this.name = name;
     }
 
@@ -32,13 +34,12 @@ public class Device {
         return id;
     }
 
-
-    public User getOwner() {
-        return owner;
+    public String getNodeId() {
+        return nodeId;
     }
 
-    public void setOwner(User owner) {
-        this.owner = owner;
+    public void setNodeId(String nodeId) {
+        this.nodeId = nodeId;
     }
 
     public String getDeviceId() {
@@ -47,6 +48,14 @@ public class Device {
 
     public void setDeviceId(String deviceId) {
         this.deviceId = deviceId;
+    }
+
+    public User getOwner() {
+        return owner;
+    }
+
+    public void setOwner(User owner) {
+        this.owner = owner;
     }
 
     public String getName() {
