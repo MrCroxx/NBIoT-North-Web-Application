@@ -3,17 +3,20 @@ package com.croxx.nbiot.request;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 
-public class JwtRegisterRequest {
+public class ReqNewUser {
     @Email
+    @NotNull
     private String email;
+    @NotNull
     private String password;
+    @NotNull
     private String name;
 
-    public JwtRegisterRequest(){
+    public ReqNewUser(){
         super();
     }
 
-    public JwtRegisterRequest(@NotNull String email,@NotNull String password,@NotNull String name){
+    public ReqNewUser(@NotNull String email, @NotNull String password, @NotNull String name){
         this.email = email;
         this.password = password;
         this.name = name;

@@ -3,18 +3,30 @@ package com.croxx.nbiot.service;
 import com.croxx.nbiot.model.Device;
 import com.croxx.nbiot.model.DeviceRepository;
 import com.croxx.nbiot.model.User;
+import com.croxx.nbiot.request.ReqNewDevice;
 import com.huawei.iotplatform.client.NorthApiClient;
 import com.huawei.iotplatform.client.NorthApiException;
-import com.huawei.iotplatform.client.dto.*;
+import com.huawei.iotplatform.client.dto.ModifyDeviceInfoInDTO;
+import com.huawei.iotplatform.client.dto.RegDirectDeviceInDTO;
+import com.huawei.iotplatform.client.dto.RegDirectDeviceOutDTO;
 import com.huawei.iotplatform.client.invokeapi.DeviceManagement;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
 
 @Service
 public class NBIoTDeviceService {
+
+
+    public static String REGISTER_DEVICEID_EXISTS = "deviceId exists";
+    public static String REGISTER_UNKNOWN_ERROR = "unknown error";
+
+    public static String DELETE_SUCCESS = "success";
+    public static String DELETE_DENIED = "denied";
+    public static String DELETE_UNKNOWN_ERROR = "unknown error";
+    public static String DELETE_DEVICEID_NOT_FOUND = "deviceId not found";
+
 
     @Autowired
     private NBIoTService nbIoTService;
@@ -23,39 +35,53 @@ public class NBIoTDeviceService {
     @Autowired
     private DeviceRepository deviceRepository;
 
-    public Boolean RegistDevice(@NotNull String deviceId, @NotNull User owner) {
+    public String RegistDevice(@NotNull ReqNewDevice reqNewDevice, @NotNull User owner) {
         try {
+            String nodeId = reqNewDevice.getNodeId();
+            String name = reqNewDevice.getName();
             NorthApiClient northApiClient = nbIoTService.getNorthApiClient();
             DeviceManagement deviceManagement = new DeviceManagement(northApiClient);
             RegDirectDeviceInDTO rddid = new RegDirectDeviceInDTO();
-            rddid.setNodeId(deviceId);
+            rddid.setNodeId(nodeId);
+            rddid.setVerifyCode(nodeId);
             RegDirectDeviceOutDTO rddod = deviceManagement.regDirectDevice(rddid, nbIoTService.getAppId(), nbIoTAuthService.getAccessToken());
-            Device addedDevice = new Device(deviceId, owner);
+            String deviceId = rddod.getDeviceId();
+            if (deviceRepository.findDeviceByDeviceId(deviceId) != null) {
+                return REGISTER_DEVICEID_EXISTS;
+            }
+            Device addedDevice = new Device(deviceId, owner, name);
+            ModifyDeviceInfoInDTO mdiid = new ModifyDeviceInfoInDTO();
+            mdiid.setName(name);
+            mdiid.setDeviceId(deviceId);
+            deviceManagement.modifyDeviceInfo(mdiid, nbIoTService.getAppId(), nbIoTAuthService.getAccessToken());
             deviceRepository.save(addedDevice);
-            return true;
+            return rddod.getDeviceId();
         } catch (NorthApiException nae) {
             nae.printStackTrace();
-            return false;
+            return REGISTER_UNKNOWN_ERROR;
         }
     }
 
 
-    public Boolean DeleteDevice(@NotNull Device device,@NotNull User owner){
-        try{
-            if(!device.getOwner().equals(owner)){
-                //权限
-                return false;
+    public String DeleteDevice(@NotNull String deviceId, @NotNull User owner) {
+        try {
+            Device device = deviceRepository.findDeviceByDeviceId(deviceId);
+            if (device == null) {
+                return DELETE_DEVICEID_NOT_FOUND;
+            }
+            if (!device.getOwner().equals(owner)) {
+                return DELETE_DENIED;
             }
             NorthApiClient northApiClient = nbIoTService.getNorthApiClient();
             DeviceManagement deviceManagement = new DeviceManagement(northApiClient);
-            deviceManagement.deleteDirectDevice(device.getDeviceId(),nbIoTService.getAppId(),nbIoTAuthService.getAccessToken());
-            return true;
-        }catch (NorthApiException nae){
+            deviceManagement.deleteDirectDevice(device.getDeviceId(), nbIoTService.getAppId(), nbIoTAuthService.getAccessToken());
+            deviceRepository.delete(device);
+            return DELETE_SUCCESS;
+        } catch (NorthApiException nae) {
             nae.printStackTrace();
-            return false;
+            return DELETE_UNKNOWN_ERROR;
         }
     }
-
 
 
 }

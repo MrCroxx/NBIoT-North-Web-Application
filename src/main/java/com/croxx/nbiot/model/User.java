@@ -5,6 +5,7 @@ import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
 
+
 @Entity
 public class User {
 
@@ -28,14 +29,14 @@ public class User {
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> roles;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "owner")
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE, mappedBy = "owner")
     private List<Device> devices;
 
     public User() {
 
     }
 
-    public User(@NotNull String email,@NotNull String password,@NotNull String name) {
+    public User(@NotNull String email, @NotNull String password, @NotNull String name) {
         this.setEmail(email);
         this.setName(name);
         this.setPassword(password);
@@ -44,8 +45,8 @@ public class User {
 
     @Override
     public boolean equals(Object obj) {
-        if(obj instanceof User){
-            if (this.getId().equals(((User)obj).getId())){
+        if (obj instanceof User) {
+            if (this.getId().equals(((User) obj).getId())) {
                 return true;
             }
         }

@@ -3,23 +3,27 @@ package com.croxx.nbiot.model;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
+
 @Entity
 public class Device {
     @Id
     @GeneratedValue
     private Long id;
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "owner_id")
     private User owner;
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String deviceId;
+    @Column(nullable = false)
+    private String name;
 
     public Device() {
     }
 
-    public Device(@NotNull String deviceId, @NotNull User owner) {
+    public Device(@NotNull String deviceId, @NotNull User owner,@NotNull String name) {
         this.owner = owner;
         this.deviceId = deviceId;
+        this.name = name;
     }
 
     /*    Getters & Setters     */
@@ -45,4 +49,11 @@ public class Device {
         this.deviceId = deviceId;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }

@@ -1,19 +1,22 @@
 package com.croxx.nbiot.request;
 
 import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
-public class  JwtAuthenticationRequest implements Serializable {
+public class ReqJwtUser implements Serializable {
 
     @Email
+    @NotNull
     private String username;
+    @NotNull
     private String password;
 
-    public JwtAuthenticationRequest() {
+    public ReqJwtUser() {
         super();
     }
 
-    public JwtAuthenticationRequest(String username, String password) {
+    public ReqJwtUser(String username, String password) {
         this.setUsername(username);
         this.setPassword(password);
     }

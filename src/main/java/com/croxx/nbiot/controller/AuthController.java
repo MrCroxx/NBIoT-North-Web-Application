@@ -1,7 +1,7 @@
 package com.croxx.nbiot.controller;
 
-import com.croxx.nbiot.request.JwtAuthenticationRequest;
-import com.croxx.nbiot.request.JwtRegisterRequest;
+import com.croxx.nbiot.request.ReqJwtUser;
+import com.croxx.nbiot.request.ReqNewUser;
 import com.croxx.nbiot.response.ResJwtAccessToken;
 import com.croxx.nbiot.model.User;
 import com.croxx.nbiot.response.ResMsg;
@@ -9,18 +9,14 @@ import com.croxx.nbiot.service.AuthService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/jwt")
@@ -34,7 +30,7 @@ public class AuthController {
     @ApiOperation(value = "jwt登录", notes = "通过username、password获取access_token")
     @RequestMapping(value = "/auth", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity<ResMsg<ResJwtAccessToken>> createAuthenticationToken(@Valid @RequestBody JwtAuthenticationRequest authenticationRequest, BindingResult bindingResult) throws AuthenticationException {
+    public ResponseEntity<ResMsg<ResJwtAccessToken>> createAuthenticationToken(@Valid @RequestBody ReqJwtUser authenticationRequest, BindingResult bindingResult) throws AuthenticationException {
         if (bindingResult.hasErrors()) {
             List<String> msgs = ResMsg.getBindErrorsMessage(bindingResult);
             return ResponseEntity.badRequest().body(new ResMsg<ResJwtAccessToken>(msgs));
@@ -58,7 +54,7 @@ public class AuthController {
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity<ResMsg> register(@Valid @RequestBody JwtRegisterRequest reqUser, BindingResult bindingResult) throws AuthenticationException {
+    public ResponseEntity<ResMsg> register(@Valid @RequestBody ReqNewUser reqUser, BindingResult bindingResult) throws AuthenticationException {
         if (bindingResult.hasErrors()) {
             List<String> msgs = ResMsg.getBindErrorsMessage(bindingResult);
             return ResponseEntity.badRequest().body(new ResMsg(msgs));
