@@ -62,6 +62,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/webjars/**").permitAll()
                 .antMatchers("/configuration/**").permitAll()
                 .antMatchers("/debug/**").permitAll()
+                .antMatchers("/nbiot/**").permitAll()
                 .anyRequest().authenticated();
         // 禁用缓存
         httpSecurity.headers().cacheControl();
