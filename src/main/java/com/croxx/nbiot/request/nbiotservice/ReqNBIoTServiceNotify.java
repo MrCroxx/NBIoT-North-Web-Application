@@ -1,4 +1,6 @@
-package com.croxx.nbiot.request;
+package com.croxx.nbiot.request.nbiotservice;
+
+import com.croxx.nbiot.request.nbiotservice.ReqNBIoTService;
 
 public class ReqNBIoTServiceNotify {
     private String notifyType;

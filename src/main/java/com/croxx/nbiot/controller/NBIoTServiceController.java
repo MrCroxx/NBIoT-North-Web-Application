@@ -1,7 +1,10 @@
 package com.croxx.nbiot.controller;
 
+import com.croxx.nbiot.request.nbiotservice.ReqNBIoTServiceNotify;
 import com.croxx.nbiot.response.ResMsg;
 import com.croxx.nbiot.service.NBIoTDeviceService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -16,17 +19,15 @@ public class NBIoTServiceController {
 
     @RequestMapping(value = "/deviceDataUpdate", method = RequestMethod.POST)
     //public ResponseEntity<ResMsg> deviceDataUpdate(@RequestBody ReqNBIoTServiceNotify<DeviceServiceData> reqNBIoTService) {
-    public ResponseEntity<ResMsg> deviceDataUpdate(@RequestBody String str) {
+    public ResponseEntity<ResMsg> deviceDataUpdate(@RequestBody ReqNBIoTServiceNotify reqNBIoTServiceNotify) {
         Logger logger = LoggerFactory.getLogger(NBIoTDeviceService.class);
-        /*
-        String msg = "";
-        msg += reqNBIoTService.getDeviceId();
-        msg += reqNBIoTService.getGatewayId();
-        msg += reqNBIoTService.getNotifyType();
-        msg += reqNBIoTService.getRequestId();
-        msg += reqNBIoTService.getService();
-        logger.info(msg);
-        */
+        ObjectMapper mapper = new ObjectMapper();
+        String str = "BUG";
+        try {
+            str = mapper.writeValueAsString(reqNBIoTServiceNotify);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
         logger.info(str);
         return ResponseEntity.ok(new ResMsg());
     }
