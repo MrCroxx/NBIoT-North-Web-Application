@@ -40,18 +40,33 @@ jwt:
 #    host: 218.4.33.71
 #    port: 8743
 
-nbiot:
-  appId: PcH6DS2vvO4_0ywnlaCF4Hfb01oa
-  secret: PB4lrxotkNR5F0NUdpEfsfcAnDsa
-  platform:
-    host: 117.78.47.187
-    port: 8743
+#nbiot:
+#  appId: PcH6DS2vvO4_0ywnlaCF4Hfb01oa
+#  secret: PB4lrxotkNR5F0NUdpEfsfcAnDsa
+#  platform:
+#    host: 117.78.47.187
+#    port: 8743
 
 # fuweinbiot
 # Huawei12#$
 # APP_ID:PcH6DS2vvO4_0ywnlaCF4Hfb01oa
 # APP_PWD:PB4lrxotkNR5F0NUdpEfsfcAnDsa
 # https://117.78.47.187:8093/
+
+nbiot:
+  appId: kAQt43oyTmKfOa2spyCVnRVuJBoa
+  secret: m8ifHaDjJlfiJpWIiU2zA9q0rBQa
+  platform:
+    host: 218.4.33.72
+    port: 8743
+
+# 15811556300
+# 8Yr-m?Q7
+# 218.4.33.72:8743
+#
+# kAQt43oyTmKfOa2spyCVnRVuJBoa
+# m8ifHaDjJlfiJpWIiU2zA9q0rBQa
+# https://218.4.33.72:8093
 
 device:
   deviceType: OneButton

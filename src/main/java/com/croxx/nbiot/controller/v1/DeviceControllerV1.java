@@ -1,4 +1,4 @@
-package com.croxx.nbiot.controller;
+package com.croxx.nbiot.controller.v1;
 
 import com.croxx.nbiot.model.Device;
 import com.croxx.nbiot.model.JwtUser;

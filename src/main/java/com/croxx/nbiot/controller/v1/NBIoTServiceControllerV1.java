@@ -1,4 +1,4 @@
-package com.croxx.nbiot.controller;
+package com.croxx.nbiot.controller.v1;
 
 import com.croxx.nbiot.request.nbiotservice.ReqNBIoTService;
 import com.croxx.nbiot.request.nbiotservice.ReqNBIoTServiceNotify;
@@ -35,25 +35,28 @@ public class NBIoTServiceControllerV1 {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-        String deviceId = reqNBIoTServiceNotify.getDeviceId();
-        if (reqNBIoTServiceNotify.getService() == null) {
-            return ResponseEntity.ok(new ResMsg(ResMsg.MSG_NBIOT_PUSH_TEST));
+        synchronized (this) {
+            String deviceId = reqNBIoTServiceNotify.getDeviceId();
+            if (reqNBIoTServiceNotify.getService() == null) {
+                return ResponseEntity.ok(new ResMsg(ResMsg.MSG_NBIOT_PUSH_TEST));
+            }
+            String serviceType = reqNBIoTServiceNotify.getService().getServiceType();
+            String status = null;
+            if (serviceType.equals(ReqNBIoTService.SERVICE_TYPE_BATTERY)) {
+                status = nbIoTDeviceService.updateBatteryByDeviceId(deviceId, reqNBIoTServiceNotify.getService().getBatteryLevel());
+            } else if (serviceType.equals(ReqNBIoTService.SERVICE_TYPE_NETWORK)) {
+                status = nbIoTDeviceService.updateNetworkByDeviceId(deviceId, reqNBIoTServiceNotify.getService().getNetworkQuality());
+            } else if (serviceType.equals(ReqNBIoTService.SERVICE_TYPE_LOCATION)) {
+                status = nbIoTDeviceService.updateLocationByDeviceId(deviceId,
+                        reqNBIoTServiceNotify.getService().getLocationLongitude(),
+                        reqNBIoTServiceNotify.getService().getLocationLatitude());
+            } else if (serviceType.equals(ReqNBIoTService.SERVICE_TYPE_CLICK)) {
+                status = nbIoTAlarmService.addNewAlarmByDeviceId(reqNBIoTServiceNotify.getDeviceId(),
+                        reqNBIoTServiceNotify.getService().getClickHoldtime(), reqNBIoTServiceNotify.getService().getEventTime());
+            }
+            return ResponseEntity.ok(new ResMsg(status));
         }
-        String serviceType = reqNBIoTServiceNotify.getService().getServiceType();
-        String status = null;
-        if (serviceType.equals(ReqNBIoTService.SERVICE_TYPE_BATTERY)) {
-            status = nbIoTDeviceService.updateBatteryByDeviceId(deviceId, reqNBIoTServiceNotify.getService().getBatteryLevel());
-        } else if (serviceType.equals(ReqNBIoTService.SERVICE_TYPE_NETWORK)) {
-            status = nbIoTDeviceService.updateNetworkByDeviceId(deviceId, reqNBIoTServiceNotify.getService().getNetworkQuality());
-        } else if (serviceType.equals(ReqNBIoTService.SERVICE_TYPE_LOCATION)) {
-            status = nbIoTDeviceService.updateLocationByDeviceId(deviceId,
-                    reqNBIoTServiceNotify.getService().getLocationLongitude(),
-                    reqNBIoTServiceNotify.getService().getLocationLatitude());
-        } else if (serviceType.equals(ReqNBIoTService.SERVICE_TYPE_CLICK)) {
-            status = nbIoTAlarmService.addNewAlarmByDeviceId(reqNBIoTServiceNotify.getDeviceId(),
-                    reqNBIoTServiceNotify.getService().getClickHoldtime(), reqNBIoTServiceNotify.getService().getEventTime());
-        }
-        return ResponseEntity.ok(new ResMsg(status));
+
     }
 
 }

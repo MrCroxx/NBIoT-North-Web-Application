@@ -1,4 +1,4 @@
-package com.croxx.nbiot.controller;
+package com.croxx.nbiot.controller.v1;
 
 import com.croxx.nbiot.model.User;
 import com.croxx.nbiot.request.ReqJwtUser;
