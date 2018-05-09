@@ -1,26 +1,97 @@
 package com.croxx.nbiot.service;
 
-import com.croxx.nbiot.model.Alarm;
-import com.croxx.nbiot.model.Device;
+import com.croxx.nbiot.model.*;
+import com.croxx.nbiot.response.ResAlarm;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class NBIoTAlarmService {
 
-    private void freshAlarmsDatabaseByDevice(Device device){
-        //return null;
+    public static String NEW_SUCCESS = "success";
+    public static String NEW_DEVICEID_NOT_FOUND = "deviceId not found";
+
+    public static String HANDLE_SUCCESS = "success";
+    public static String HANDLE_ALARMID_NOT_FOUND = "alarmId not found";
+    public static String HANDLE_DENIED = "denied";
+
+    public static String QUERY_DEVICEID_NOT_FOUND_OR_DENIED = "deviceId not found or denied";
+
+
+    @Autowired
+    private DeviceRepository deviceRepository;
+    @Autowired
+    private AlarmRepository alarmRepository;
+
+    public String addNewAlarmByDeviceId(@NotNull String deviceId, @NotNull float holdtime, @NotNull Date dateOfAlarm) {
+        Device device = deviceRepository.findDeviceByDeviceIdAndStatusNot(deviceId, Device.STATUS_ABANDOND);
+        if (device == null)
+            return NEW_DEVICEID_NOT_FOUND;
+        Alarm alarm = new Alarm(device, holdtime, dateOfAlarm, device.getLocationLongitude(), device.getLocationLatitude());
+        alarmRepository.save(alarm);
+        return NEW_SUCCESS;
     }
 
-    public List<Alarm> GetAlarmsByDevice(Device device){
-        return null;
+    public String handleAlarmByAlarmId(@NotNull Long alarm_id, @NotNull User owner, @NotNull int type, @NotNull int risk) {
+        Alarm alarm = alarmRepository.findAlarmById(alarm_id);
+        if (alarm == null)
+            return HANDLE_ALARMID_NOT_FOUND;
+        if (!alarm.getDevice().getOwner().equals(owner))
+            return HANDLE_DENIED;
+        alarm.solve(Alarm.STATUS_SOLVED, type, risk);
+        alarmRepository.save(alarm);
+        return HANDLE_SUCCESS;
     }
 
-    public Map<Device,List<Alarm>> GetAlarmsByDevices(List<Device> devices){
-        return null;
+    public List<ResAlarm> getResAlarmsByDeviceIdAndStatus(@NotNull String deviceId, @NotNull User owner, @NotNull int status) {
+        Device device = deviceRepository.findDeviceByDeviceIdAndStatusNot(deviceId, Device.STATUS_ABANDOND);
+        if (device == null) return null;
+        if (!device.getOwner().equals(owner)) return null;
+        List<ResAlarm> resAlarms = new ArrayList<>();
+        List<Alarm> alarms = (status == Alarm.STATUS_ALL)
+                ? alarmRepository.findAlarmsByDeviceOrderByDateOfAlarm(device)
+                : alarmRepository.findAlarmsByDeviceAndStatusOrderByDateOfAlarm(device, status);
+        for (Alarm alarm : alarms) {
+            resAlarms.add(
+                    new ResAlarm(alarm.getId(), alarm.getDevice().getDeviceId(), alarm.getHoldtime(),
+                            alarm.getType(), alarm.getStatus(), alarm.getRisk(),
+                            alarm.getLocationLongitude(), alarm.getLocationLatitude(),
+                            alarm.getDateOfAlarm(), alarm.getDateOfClear())
+            );
+        }
+        return resAlarms;
     }
 
+    public List<ResAlarm> getResAlarmsByUserAndStatus(@NotNull User user, @NotNull int status) {
+        List<ResAlarm> resAlarms = new ArrayList<>();
+        List<Alarm> alarms = (status == Alarm.STATUS_ALL)
+                ? alarmRepository.findAlarmsByUser(user)
+                : alarmRepository.findAlarmsByUserAndStatus(user, status);
+        for (Alarm alarm : alarms) {
+            resAlarms.add(
+                    new ResAlarm(alarm.getId(), alarm.getDevice().getDeviceId(), alarm.getHoldtime(),
+                            alarm.getType(), alarm.getStatus(), alarm.getRisk(),
+                            alarm.getLocationLongitude(), alarm.getLocationLatitude(),
+                            alarm.getDateOfAlarm(), alarm.getDateOfClear())
+            );
+        }
+        return resAlarms;
+    }
+
+    public ResAlarm getResAlarmByAlarmId(@NotNull Long alarmId, @NotNull User owner) {
+        Alarm alarm = alarmRepository.findAlarmById(alarmId);
+        if (alarm == null) return null;
+        if (!alarm.getDevice().getOwner().equals(owner)) return null;
+        ResAlarm resAlarm = new ResAlarm(alarm.getId(), alarm.getDevice().getDeviceId(), alarm.getHoldtime(),
+                alarm.getType(), alarm.getStatus(), alarm.getRisk(),
+                alarm.getLocationLongitude(), alarm.getLocationLatitude(),
+                alarm.getDateOfAlarm(), alarm.getDateOfClear());
+        return resAlarm;
+    }
 
 }

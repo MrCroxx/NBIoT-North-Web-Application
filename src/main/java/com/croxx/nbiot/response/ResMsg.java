@@ -13,6 +13,7 @@ public class ResMsg<T> {
     public static final String MSG_SUCCESS = "success";
     public static final String MSG_DATA_REQUIRED = "data required";
     public static final String MSG_DATA_ILLEGAL = "data illegal";
+    public static final String MSG_NBIOT_PUSH_TEST = "nbiot push test";
 
     public static List<String> getBindErrorsMessage(BindingResult bindingResult) {
         List<String> msgs = new ArrayList<>();

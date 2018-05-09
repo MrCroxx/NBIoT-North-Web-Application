@@ -54,15 +54,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/jwt/**").permitAll()
-                .antMatchers("/user/signup").permitAll()
+                .antMatchers("/v*/jwt/**").permitAll()
+                .antMatchers("/v*/nbiot/**").permitAll()
+                .antMatchers("/debug/**").permitAll()
+
                 .antMatchers("/swagger-ui.html").permitAll()
                 .antMatchers("/swagger*/**").permitAll()
                 .antMatchers("/v2/**").permitAll()
                 .antMatchers("/webjars/**").permitAll()
                 .antMatchers("/configuration/**").permitAll()
-                .antMatchers("/debug/**").permitAll()
-                .antMatchers("/nbiot/**").permitAll()
                 .anyRequest().authenticated();
         // 禁用缓存
         httpSecurity.headers().cacheControl();
@@ -74,7 +74,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public JwtAuthenticationTokenFilter authenticationTokenFilterBean() throws Exception {
         return new JwtAuthenticationTokenFilter();
     }
-
 
 
 }

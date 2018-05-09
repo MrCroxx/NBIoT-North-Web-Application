@@ -19,8 +19,8 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("/jwt")
-public class AuthController {
+@RequestMapping("/v1/jwt")
+public class AuthControllerV1 {
     @Value("${jwt.header}")
     private String tokenHeader;
     @Autowired
@@ -52,6 +52,7 @@ public class AuthController {
         }
     }
 
+    @ApiOperation(value = "用户注册", notes = "用户注册API")
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     @ResponseBody
     public ResponseEntity<ResMsg> register(@Valid @RequestBody ReqNewUser reqUser, BindingResult bindingResult) throws AuthenticationException {

@@ -2,6 +2,7 @@ package com.croxx.nbiot.model;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.Date;
 import java.util.List;
 
 
@@ -19,7 +20,7 @@ public class Device {
     @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "owner_id")
     private User owner;
-    @Column(nullable = false,unique = true)
+    @Column(nullable = false, unique = true)
     private String nodeId;
     @Column(nullable = false, unique = true)
     private String deviceId;
@@ -28,13 +29,15 @@ public class Device {
     @Column(nullable = false)
     private int status;
     @Column
-    private int battery;
+    private int batteryLevel;
     @Column
-    private int network;
+    private int networkQuality;
     @Column
-    private double latitude;
+    private float locationLatitude;
     @Column
-    private double longitude;
+    private float locationLongitude;
+    @Column
+    private Date baseinfoModifiedTime;
 
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE, mappedBy = "owner")
@@ -43,11 +46,20 @@ public class Device {
     public Device() {
     }
 
-    public Device(@NotNull String nodeId,@NotNull String deviceId, @NotNull User owner,@NotNull String name) {
+    public Device(@NotNull String nodeId, @NotNull String deviceId, @NotNull User owner, @NotNull String name) {
         this.nodeId = nodeId;
         this.owner = owner;
         this.name = name;
-        this.status = STATUS_OFFLINE;
+        this.status = STATUS_ONLINE;
+        this.batteryLevel = 0;
+        this.networkQuality = 0;
+        this.locationLongitude = 0f;
+        this.locationLatitude = 0f;
+        this.baseinfoModifiedTime = new Date();
+    }
+
+    public void updateBaseinfoModifiedTime() {
+        this.baseinfoModifiedTime = new Date();
     }
 
     /*    Getters & Setters     */
@@ -104,35 +116,43 @@ public class Device {
         this.devices = devices;
     }
 
-    public int getBattery() {
-        return battery;
+    public int getBatteryLevel() {
+        return batteryLevel;
     }
 
-    public void setBattery(int battery) {
-        this.battery = battery;
+    public void setBatteryLevel(int batteryLevel) {
+        this.batteryLevel = batteryLevel;
     }
 
-    public int getNetwork() {
-        return network;
+    public int getNetworkQuality() {
+        return networkQuality;
     }
 
-    public void setNetwork(int network) {
-        this.network = network;
+    public void setNetworkQuality(int networkQuality) {
+        this.networkQuality = networkQuality;
     }
 
-    public double getLatitude() {
-        return latitude;
+    public float getLocationLatitude() {
+        return locationLatitude;
     }
 
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
+    public void setLocationLatitude(float locationLatitude) {
+        this.locationLatitude = locationLatitude;
     }
 
-    public double getLongitude() {
-        return longitude;
+    public float getLocationLongitude() {
+        return locationLongitude;
     }
 
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
+    public void setLocationLongitude(float locationLongitude) {
+        this.locationLongitude = locationLongitude;
+    }
+
+    public Date getBaseinfoModifiedTime() {
+        return baseinfoModifiedTime;
+    }
+
+    public void setBaseinfoModifiedTime(Date baseinfoModifiedTime) {
+        this.baseinfoModifiedTime = baseinfoModifiedTime;
     }
 }

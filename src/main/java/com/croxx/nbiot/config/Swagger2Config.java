@@ -30,7 +30,7 @@ public class Swagger2Config {
 
         List<Parameter> pars = new ArrayList<>();
         pars.add(
-                new ParameterBuilder().name("Authorization").description("JWT鉴权字段(`/jwt/auth`路由不需要此字段)")
+                new ParameterBuilder().name("Authorization").description("JWT鉴权字段(`/jwt/auth`与`/nbiot/**`路由不需要此字段)")
                         .modelRef(new ModelRef("string")).parameterType("header")
                         .required(true).build()
         );

@@ -31,6 +31,11 @@ public class NBIoTDeviceService {
     public static String DELETE_UNKNOWN_ERROR = "unknown error";
     public static String DELETE_DEVICEID_NOT_FOUND = "deviceId not found";
 
+    public static String UPDATE_SUCCESS = "success";
+    public static String UPDATE_DEVICEID_NOT_FOUND = "deviceId not found";
+
+    public static String DETAIL_NOT_FOUND_OR_DENIED = "not found or denied";
+
 
     @Autowired
     private NBIoTService nbIoTService;
@@ -49,7 +54,7 @@ public class NBIoTDeviceService {
     @Value("${device.protocolType}")
     private String protocolType;
 
-    public String RegistDevice(@NotNull ReqNewDevice reqNewDevice, @NotNull User owner) {
+    public String registDevice(@NotNull ReqNewDevice reqNewDevice, @NotNull User owner) {
         try {
             String nodeId = reqNewDevice.getNodeId();
             String name = reqNewDevice.getName();
@@ -62,6 +67,12 @@ public class NBIoTDeviceService {
             String deviceId = rddod.getDeviceId();
             if (deviceRepository.findDeviceByDeviceIdAndStatusNot(deviceId, Device.STATUS_ABANDOND) != null) {
                 return REGISTER_DEVICEID_EXISTS;
+            }
+            if (deviceRepository.findDeviceByDeviceIdAndStatus(deviceId, Device.STATUS_ABANDOND) != null) {
+                Device device = deviceRepository.findDeviceByDeviceIdAndStatus(deviceId, Device.STATUS_ABANDOND);
+                device.setStatus(Device.STATUS_ONLINE);
+                deviceRepository.save(device);
+                return deviceId;
             }
             Device addedDevice = new Device(nodeId, deviceId, owner, name);
             ModifyDeviceInfoInDTO mdiid = new ModifyDeviceInfoInDTO();
@@ -83,7 +94,7 @@ public class NBIoTDeviceService {
     }
 
 
-    public String DeleteDevice(@NotNull String deviceId, @NotNull User owner) {
+    public String deleteDevice(@NotNull String deviceId, @NotNull User owner) {
         //try {
         Device device = deviceRepository.findDeviceByDeviceIdAndStatusNot(deviceId, Device.STATUS_ABANDOND);
         if (device == null) {
@@ -105,14 +116,63 @@ public class NBIoTDeviceService {
         //}
     }
 
-    public List<ResDevice> GetResDevicesByOwner(User owner) {
+    public List<ResDevice> getResDevicesByOwner(@NotNull User owner) {
         List<Device> devices = deviceRepository.findDeviceByOwnerAndStatusNot(owner, Device.STATUS_ABANDOND);
         List<ResDevice> resDevices = new ArrayList<>();
         for (Device device : devices) {
-            resDevices.add(new ResDevice(device.getNodeId(), device.getDeviceId(), device.getName()));
+            resDevices.add(new ResDevice(device.getNodeId(), device.getDeviceId(), device.getName(),
+                    device.getBatteryLevel(), device.getNetworkQuality(),
+                    device.getLocationLongitude(), device.getLocationLatitude(),
+                    device.getBaseinfoModifiedTime()));
         }
         return resDevices;
     }
 
+    public ResDevice getResDeviceByDeviceId(@NotNull String deviceId, @NotNull User owner) {
+        Device device = deviceRepository.findDeviceByDeviceIdAndStatusNot(deviceId, Device.STATUS_ABANDOND);
+        if (device == null) {
+            return null;
+        }
+        if (!device.getOwner().equals(owner)) {
+            return null;
+        }
+        return new ResDevice(device.getNodeId(), device.getDeviceId(), device.getName(),
+                device.getBatteryLevel(), device.getNetworkQuality(),
+                device.getLocationLongitude(), device.getLocationLatitude(),
+                device.getBaseinfoModifiedTime());
+    }
 
+    public String updateBatteryByDeviceId(@NotNull String deviceId, @NotNull int level) {
+        Device device = deviceRepository.findDeviceByDeviceId(deviceId);
+        if (device == null) {
+            return UPDATE_DEVICEID_NOT_FOUND;
+        }
+        device.setBatteryLevel(level);
+        device.updateBaseinfoModifiedTime();
+        deviceRepository.save(device);
+        return UPDATE_SUCCESS;
+    }
+
+    public String updateNetworkByDeviceId(@NotNull String deviceId, @NotNull int quality) {
+        Device device = deviceRepository.findDeviceByDeviceId(deviceId);
+        if (device == null) {
+            return UPDATE_DEVICEID_NOT_FOUND;
+        }
+        device.setNetworkQuality(quality);
+        device.updateBaseinfoModifiedTime();
+        deviceRepository.save(device);
+        return UPDATE_SUCCESS;
+    }
+
+    public String updateLocationByDeviceId(@NotNull String deviceId, @NotNull float longitude, @NotNull float latitude) {
+        Device device = deviceRepository.findDeviceByDeviceId(deviceId);
+        if (device == null) {
+            return UPDATE_DEVICEID_NOT_FOUND;
+        }
+        device.setLocationLongitude(longitude);
+        device.setLocationLatitude(latitude);
+        device.updateBaseinfoModifiedTime();
+        deviceRepository.save(device);
+        return UPDATE_SUCCESS;
+    }
 }

@@ -59,6 +59,14 @@ public class ReqNBIoTService {
         return 0;
     }
 
+    public float getClickHoldtime() {
+        if (serviceType.equals(SERVICE_TYPE_CLICK)) {
+            int intBits = Integer.parseInt(data.get("holdtime"));
+            return Float.intBitsToFloat(intBits);
+        }
+        return 0f;
+    }
+
 
     /*    Getters & Setters     */
 

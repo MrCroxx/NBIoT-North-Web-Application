@@ -23,8 +23,8 @@ import java.util.List;
 
 @RestController
 @PreAuthorize("hasRole('USER')")
-@RequestMapping("/device")
-public class DeviceController {
+@RequestMapping("/v1/device")
+public class DeviceControllerV1 {
 
     @Autowired
     private NBIoTDeviceService nbIoTDeviceService;
@@ -42,7 +42,7 @@ public class DeviceController {
         }
         JwtUser jwtUser = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userRepository.findByEmail(jwtUser.getUsername());
-        String status = nbIoTDeviceService.RegistDevice(reqNewDevice, user);
+        String status = nbIoTDeviceService.registDevice(reqNewDevice, user);
         if (!(status.equals(NBIoTDeviceService.REGISTER_DEVICEID_EXISTS) || status.equals(NBIoTDeviceService.REGISTER_UNKNOWN_ERROR))) {
             return ResponseEntity.ok(new ResMsg<ResDevice>(ResMsg.MSG_SUCCESS, status));
         } else {
@@ -61,7 +61,7 @@ public class DeviceController {
         }
         JwtUser jwtUser = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userRepository.findByEmail(jwtUser.getUsername());
-        String status = nbIoTDeviceService.DeleteDevice(reqDevice.getDeviceId(), user);
+        String status = nbIoTDeviceService.deleteDevice(reqDevice.getDeviceId(), user);
         if (status.equals(NBIoTDeviceService.DELETE_SUCCESS)) {
             return ResponseEntity.ok(new ResMsg(ResMsg.MSG_SUCCESS));
         } else {
@@ -70,13 +70,29 @@ public class DeviceController {
     }
 
     @ApiOperation(value = "查询注册过的NBIoT设备")
-    @RequestMapping(value = "/list", method = RequestMethod.POST)
+    @RequestMapping(value = "/query", method = RequestMethod.GET)
     @PreAuthorize("hasRole('USER')")
     @ResponseBody
-    public ResponseEntity<ResMsg<List<ResDevice>>> list() {
+    public ResponseEntity<ResMsg<List<ResDevice>>> queryDevices() {
         JwtUser jwtUser = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userRepository.findByEmail(jwtUser.getUsername());
-        List<ResDevice> resDevices = nbIoTDeviceService.GetResDevicesByOwner(user);
-        return ResponseEntity.ok(new ResMsg<List<ResDevice>>(resDevices,ResMsg.MSG_SUCCESS));
+        List<ResDevice> resDevices = nbIoTDeviceService.getResDevicesByOwner(user);
+        return ResponseEntity.ok(new ResMsg<List<ResDevice>>(resDevices, ResMsg.MSG_SUCCESS));
     }
+
+    @ApiOperation(value = "查询NBIoT设备详细信息")
+    @RequestMapping(value = "/detail/{deviceId}", method = RequestMethod.GET)
+    @PreAuthorize("hasRole('USER')")
+    @ResponseBody
+    public ResponseEntity<ResMsg<ResDevice>> detail(@PathVariable String deviceId) {
+        JwtUser jwtUser = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userRepository.findByEmail(jwtUser.getUsername());
+        ResDevice resDevice = nbIoTDeviceService.getResDeviceByDeviceId(deviceId, user);
+        if (resDevice == null) {
+            return ResponseEntity.badRequest().body(new ResMsg<ResDevice>(NBIoTDeviceService.DETAIL_NOT_FOUND_OR_DENIED));
+        } else {
+            return ResponseEntity.ok(new ResMsg<ResDevice>(resDevice, ResMsg.MSG_SUCCESS));
+        }
+    }
+
 }
