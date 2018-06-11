@@ -1,17 +1,21 @@
 package com.croxx.nbiot.request;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 public class ReqNewDevice {
-    @NotNull
+    @NotEmpty
+    @Size(min = 6, max = 32)
     private String nodeId;
-    @NotNull
+    @NotEmpty
+    @Size(min = 6, max = 32)
     private String name;
 
     public ReqNewDevice() {
     }
 
-    public ReqNewDevice(@NotNull String nodeId,@NotNull String name) {
+    public ReqNewDevice(@NotNull String nodeId, @NotNull String name) {
         this.nodeId = nodeId;
         this.name = name;
     }

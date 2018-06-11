@@ -28,11 +28,11 @@ public class NBIoTAlarmService {
     @Autowired
     private AlarmRepository alarmRepository;
 
-    public String addNewAlarmByDeviceId(@NotNull String deviceId, @NotNull float holdtime, @NotNull Date dateOfAlarm) {
+    public String addNewAlarmByDeviceId(@NotNull String deviceId, @NotNull float holdtime, Date dateOfAlarm) {
         Device device = deviceRepository.findDeviceByDeviceIdAndStatusNot(deviceId, Device.STATUS_ABANDOND);
         if (device == null)
             return NEW_DEVICEID_NOT_FOUND;
-        Alarm alarm = new Alarm(device, holdtime, dateOfAlarm, device.getLocationLongitude(), device.getLocationLatitude());
+        Alarm alarm = new Alarm(device, holdtime, (dateOfAlarm != null) ? (dateOfAlarm) : (new Date()), device.getLocationLongitude(), device.getLocationLatitude());
         alarmRepository.save(alarm);
         return NEW_SUCCESS;
     }

@@ -2,10 +2,18 @@ package com.croxx.nbiot.request.nbiotservice;
 
 import com.croxx.nbiot.request.nbiotservice.ReqNBIoTService;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
+
 public class ReqNBIoTServiceNotify {
+
     private String notifyType;
     private String requestId;
+    @NotEmpty
+    @Size(min = 6, max = 32)
     private String deviceId;
+    @NotEmpty
+    @Size(min = 6, max = 32)
     private String gatewayId;
     private ReqNBIoTService service;
 

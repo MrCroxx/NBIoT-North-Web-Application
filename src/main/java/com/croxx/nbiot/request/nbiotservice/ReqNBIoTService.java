@@ -103,4 +103,5 @@ public class ReqNBIoTService {
     public void setData(Map<String, String> data) {
         this.data = data;
     }
+
 }

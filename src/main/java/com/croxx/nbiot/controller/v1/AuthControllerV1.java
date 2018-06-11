@@ -9,6 +9,7 @@ import com.croxx.nbiot.service.AuthService;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.BindingResult;
@@ -36,7 +37,11 @@ public class AuthControllerV1 {
             return ResponseEntity.badRequest().body(new ResMsg<ResJwtAccessToken>(msgs));
         }
         final String token = authService.login(authenticationRequest.getUsername(), authenticationRequest.getPassword()); // Return the token
-        return ResponseEntity.ok(new ResMsg<ResJwtAccessToken>(new ResJwtAccessToken(token), ResMsg.MSG_SUCCESS));
+        if (token != null) {
+            return ResponseEntity.ok(new ResMsg<ResJwtAccessToken>(new ResJwtAccessToken(token, authService.getExpiration()), ResMsg.MSG_SUCCESS));
+        }else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ResMsg<>(ResMsg.MSG_FORBIDDEN));
+        }
     }
 
     @ApiOperation(value = "JWT刷新Token", notes = "使用过期的token获取刷新的token")
@@ -48,7 +53,7 @@ public class AuthControllerV1 {
         if (refreshedToken == null) {
             return ResponseEntity.badRequest().body(new ResMsg<ResJwtAccessToken>(ResMsg.MSG_DATA_ILLEGAL));
         } else {
-            return ResponseEntity.ok(new ResMsg<ResJwtAccessToken>(new ResJwtAccessToken(refreshedToken), ResMsg.MSG_SUCCESS));
+            return ResponseEntity.ok(new ResMsg<ResJwtAccessToken>(new ResJwtAccessToken(refreshedToken, authService.getExpiration()), ResMsg.MSG_SUCCESS));
         }
     }
 

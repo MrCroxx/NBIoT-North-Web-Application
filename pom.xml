@@ -125,7 +125,12 @@
             <artifactId>client</artifactId>
             <version>1.0.0</version>
         </dependency>
-
+        <!-- MockMVC -->
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>

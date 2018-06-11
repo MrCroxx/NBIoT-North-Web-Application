@@ -1,13 +1,19 @@
 package com.croxx.nbiot.request;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 public class ReqAlarmHandler {
     @NotNull
     private Long id;
     @NotNull
+    @Min(-1)
+    @Max(1)
     private int type;
     @NotNull
+    @Min(1)
+    @Max(5)
     private int risk;
 
     public ReqAlarmHandler() {

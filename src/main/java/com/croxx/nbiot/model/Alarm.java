@@ -8,13 +8,17 @@ import java.util.Date;
 public class Alarm {
 
     public static int TYPE_UNKNOWN = 0;
+    public static int TYPE_HUMAN = 1;
+    public static int TYPE_FAKE = -1;
 
     public static int STATUS_UNSOLVED = 0;
     public static int STATUS_SOLVED = 1;
     public static int STATUS_ALL = -1;
 
     public static int RISK_HIGH = 5;
+    public static int RISK_MIDHIGN = 4;
     public static int RISK_MIDDLE = 3;
+    public static int RISK_MIDLOW = 2;
     public static int RISK_LOW = 1;
     public static int RISK_UNHANDLED = 0;
 

@@ -58,10 +58,6 @@ public class Device {
         this.baseinfoModifiedTime = new Date();
     }
 
-    public void updateBaseinfoModifiedTime() {
-        this.baseinfoModifiedTime = new Date();
-    }
-
     /*    Getters & Setters     */
 
     public Long getId() {

@@ -9,13 +9,16 @@ server:
 spring:
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://58.87.101.103:3306/nbiot
+    url: jdbc:mysql://58.87.101.103:3306/nbiot?useUnicode=true&characterEncoding=utf8
     username: nbiot
     password: nbiot100202
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
+    properties:
+          hibernate:
+            dialect: com.croxx.nbiot.config.MySQL5InnoDBDialectUtf8mb4
   jackson:
     serialization:
       indent_output: true
@@ -67,6 +70,18 @@ nbiot:
 # kAQt43oyTmKfOa2spyCVnRVuJBoa
 # m8ifHaDjJlfiJpWIiU2zA9q0rBQa
 # https://218.4.33.72:8093
+# Sample Message Code:
+#
+# BaseInfo : 00030342E8EB85421FAE14
+# 00 messageId
+# 03 BatteryLevel
+# 03 NetworkQuality
+# 42E8EB85 LocationLongitude 116.46
+# 421FAE14 LocationLatitude 39.92
+#
+# Click : 0140200000
+# 01 messageId
+# 40200000 ClickHoldtime 2.5
 
 device:
   deviceType: OneButton

@@ -14,6 +14,7 @@ public class ResMsg<T> {
     public static final String MSG_DATA_REQUIRED = "data required";
     public static final String MSG_DATA_ILLEGAL = "data illegal";
     public static final String MSG_NBIOT_PUSH_TEST = "nbiot push test";
+    public static final String MSG_FORBIDDEN = "forbidden";
 
     public static List<String> getBindErrorsMessage(BindingResult bindingResult) {
         List<String> msgs = new ArrayList<>();
@@ -26,6 +27,9 @@ public class ResMsg<T> {
 
     private List<String> msgs;
     private T content;
+
+    public ResMsg() {
+    }
 
     public ResMsg(@NotNull String... msgs) {
         this.msgs = new ArrayList<>();

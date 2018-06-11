@@ -1,22 +1,27 @@
 package com.croxx.nbiot.request;
 
 import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 import javax.validation.constraints.NotNull;
 
 public class ReqNewUser {
+    @NotEmpty
     @Email
-    @NotNull
+    @Size(min = 6, max = 32)
     private String email;
-    @NotNull
+    @NotEmpty
+    @Size(min = 6, max = 32)
     private String password;
-    @NotNull
+    @NotEmpty
+    @Size(min = 6, max = 32)
     private String name;
 
-    public ReqNewUser(){
+    public ReqNewUser() {
         super();
     }
 
-    public ReqNewUser(@NotNull String email, @NotNull String password, @NotNull String name){
+    public ReqNewUser(@NotNull String email, @NotNull String password, @NotNull String name) {
         this.email = email;
         this.password = password;
         this.name = name;

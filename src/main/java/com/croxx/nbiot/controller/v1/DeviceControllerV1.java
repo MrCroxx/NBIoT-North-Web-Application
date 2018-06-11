@@ -12,18 +12,25 @@ import com.croxx.nbiot.response.ResMsg;
 import com.croxx.nbiot.service.NBIoTDeviceService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
+import javax.validation.constraints.Size;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @PreAuthorize("hasRole('USER')")
 @RequestMapping("/v1/device")
+@Validated
 public class DeviceControllerV1 {
 
     @Autowired
@@ -32,7 +39,7 @@ public class DeviceControllerV1 {
     private UserRepository userRepository;
 
     @ApiOperation(value = "注册NBIoT设备")
-    @RequestMapping(value = "/manage", method = RequestMethod.PUT)
+    @RequestMapping(value = "/", method = RequestMethod.PUT)
     @PreAuthorize("hasRole('USER')")
     @ResponseBody
     public ResponseEntity<ResMsg<ResDevice>> manage_register(@Valid @RequestBody ReqNewDevice reqNewDevice, BindingResult bindingResult) {
@@ -42,26 +49,22 @@ public class DeviceControllerV1 {
         }
         JwtUser jwtUser = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userRepository.findByEmail(jwtUser.getUsername());
-        String status = nbIoTDeviceService.registDevice(reqNewDevice, user);
-        if (!(status.equals(NBIoTDeviceService.REGISTER_DEVICEID_EXISTS) || status.equals(NBIoTDeviceService.REGISTER_UNKNOWN_ERROR))) {
-            return ResponseEntity.ok(new ResMsg<ResDevice>(ResMsg.MSG_SUCCESS, status));
+        ResMsg<ResDevice> resMsg = nbIoTDeviceService.registDevice(reqNewDevice, user);
+        if (resMsg.getContent() != null) {
+            return ResponseEntity.ok(resMsg);
         } else {
-            return ResponseEntity.badRequest().body(new ResMsg<ResDevice>(status));
+            return ResponseEntity.badRequest().body(resMsg);
         }
     }
 
     @ApiOperation(value = "删除NBIoT设备")
-    @RequestMapping(value = "/manage", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/{deviceId}", method = RequestMethod.DELETE)
     @PreAuthorize("hasRole('USER')")
     @ResponseBody
-    public ResponseEntity<ResMsg> manage_delete(@Valid @RequestBody ReqDevice reqDevice, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            List<String> msgs = ResMsg.getBindErrorsMessage(bindingResult);
-            return ResponseEntity.badRequest().body(new ResMsg<ResJwtAccessToken>(msgs));
-        }
+    public ResponseEntity<ResMsg> manage_delete(@PathVariable @Size(min = 6, max = 48) String deviceId) {
         JwtUser jwtUser = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userRepository.findByEmail(jwtUser.getUsername());
-        String status = nbIoTDeviceService.deleteDevice(reqDevice.getDeviceId(), user);
+        String status = nbIoTDeviceService.deleteDevice(deviceId, user);
         if (status.equals(NBIoTDeviceService.DELETE_SUCCESS)) {
             return ResponseEntity.ok(new ResMsg(ResMsg.MSG_SUCCESS));
         } else {
@@ -70,7 +73,7 @@ public class DeviceControllerV1 {
     }
 
     @ApiOperation(value = "查询注册过的NBIoT设备")
-    @RequestMapping(value = "/query", method = RequestMethod.GET)
+    @RequestMapping(value = "/", method = RequestMethod.GET)
     @PreAuthorize("hasRole('USER')")
     @ResponseBody
     public ResponseEntity<ResMsg<List<ResDevice>>> queryDevices() {
@@ -81,10 +84,11 @@ public class DeviceControllerV1 {
     }
 
     @ApiOperation(value = "查询NBIoT设备详细信息")
-    @RequestMapping(value = "/detail/{deviceId}", method = RequestMethod.GET)
+    @RequestMapping(value = "/{deviceId}", method = RequestMethod.GET)
     @PreAuthorize("hasRole('USER')")
     @ResponseBody
-    public ResponseEntity<ResMsg<ResDevice>> detail(@PathVariable String deviceId) {
+    public ResponseEntity<ResMsg<ResDevice>> detail(@PathVariable @Size(min = 6, max = 48) String deviceId) {
+
         JwtUser jwtUser = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userRepository.findByEmail(jwtUser.getUsername());
         ResDevice resDevice = nbIoTDeviceService.getResDeviceByDeviceId(deviceId, user);
@@ -93,6 +97,17 @@ public class DeviceControllerV1 {
         } else {
             return ResponseEntity.ok(new ResMsg<ResDevice>(resDevice, ResMsg.MSG_SUCCESS));
         }
+    }
+
+    @ExceptionHandler(value = {ConstraintViolationException.class})
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ResMsg> handleResourceNotFoundException(ConstraintViolationException e) {
+        Set<ConstraintViolation<?>> violations = e.getConstraintViolations();
+        StringBuilder strBuilder = new StringBuilder();
+        for (ConstraintViolation<?> violation : violations) {
+            strBuilder.append(violation.getMessage() + "\n");
+        }
+        return ResponseEntity.badRequest().body(new ResMsg(strBuilder.toString()));
     }
 
 }

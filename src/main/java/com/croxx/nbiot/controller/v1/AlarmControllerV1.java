@@ -5,27 +5,32 @@ import com.croxx.nbiot.model.Alarm;
 import com.croxx.nbiot.model.JwtUser;
 import com.croxx.nbiot.model.User;
 import com.croxx.nbiot.model.UserRepository;
-import com.croxx.nbiot.request.ReqAlarm;
 import com.croxx.nbiot.request.ReqAlarmHandler;
-import com.croxx.nbiot.request.ReqDevice;
 import com.croxx.nbiot.response.ResAlarm;
 import com.croxx.nbiot.response.ResJwtAccessToken;
 import com.croxx.nbiot.response.ResMsg;
 import com.croxx.nbiot.service.NBIoTAlarmService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
+import javax.validation.constraints.Size;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @PreAuthorize("hasRole('USER')")
 @RequestMapping("/v1/alarm")
+@Validated
 public class AlarmControllerV1 {
 
     @Autowired
@@ -34,8 +39,8 @@ public class AlarmControllerV1 {
     private NBIoTAlarmService nbIoTAlarmService;
 
     @ApiOperation(value = "查询设备发出的所有警报", notes = "使用deviceId查询该设备发出的全部警报")
-    @RequestMapping(value = "/query/device/{deviceId}/all", method = RequestMethod.GET)
-    public ResponseEntity<ResMsg<List<ResAlarm>>> queryAlarmsByDeivce(@PathVariable String deviceId) {
+    @RequestMapping(value = "/device/{deviceId}/", method = RequestMethod.GET)
+    public ResponseEntity<ResMsg<List<ResAlarm>>> queryAlarmsByDeivce(@PathVariable @Size(min = 6, max = 48) String deviceId) {
         JwtUser jwtUser = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userRepository.findByEmail(jwtUser.getUsername());
         List<ResAlarm> resAlarms = nbIoTAlarmService.getResAlarmsByDeviceIdAndStatus(deviceId, user, Alarm.STATUS_ALL);
@@ -47,8 +52,8 @@ public class AlarmControllerV1 {
     }
 
     @ApiOperation(value = "查询设备发出的所有已经解决的警报", notes = "使用deviceId查询该设备发出的已经解决警报")
-    @RequestMapping(value = "/query/device/{deviceId}/solved", method = RequestMethod.GET)
-    public ResponseEntity<ResMsg<List<ResAlarm>>> querySolvedAlarmsByDeivce(@PathVariable String deviceId) {
+    @RequestMapping(value = "/device/{deviceId}/solved", method = RequestMethod.GET)
+    public ResponseEntity<ResMsg<List<ResAlarm>>> querySolvedAlarmsByDeivce(@PathVariable @Size(min = 6, max = 48) String deviceId) {
         JwtUser jwtUser = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userRepository.findByEmail(jwtUser.getUsername());
         List<ResAlarm> resAlarms = nbIoTAlarmService.getResAlarmsByDeviceIdAndStatus(deviceId, user, Alarm.STATUS_SOLVED);
@@ -60,8 +65,8 @@ public class AlarmControllerV1 {
     }
 
     @ApiOperation(value = "查询设备发出的所有未解决警报", notes = "使用deviceId查询该设备发出的未解决警报")
-    @RequestMapping(value = "/query/device/{deviceId}/unsolved", method = RequestMethod.GET)
-    public ResponseEntity<ResMsg<List<ResAlarm>>> queryUnsolvedAlarmsByDeivce(@PathVariable String deviceId) {
+    @RequestMapping(value = "/device/{deviceId}/unsolved", method = RequestMethod.GET)
+    public ResponseEntity<ResMsg<List<ResAlarm>>> queryUnsolvedAlarmsByDeivce(@PathVariable @Size(min = 6, max = 48) String deviceId) {
         JwtUser jwtUser = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userRepository.findByEmail(jwtUser.getUsername());
         List<ResAlarm> resAlarms = nbIoTAlarmService.getResAlarmsByDeviceIdAndStatus(deviceId, user, Alarm.STATUS_UNSOLVED);
@@ -73,7 +78,7 @@ public class AlarmControllerV1 {
     }
 
     @ApiOperation(value = "查询用户所有设备下的所有警报", notes = "查询用户所有设备下的所有警报")
-    @RequestMapping(value = "/query/all", method = RequestMethod.GET)
+    @RequestMapping(value = "/", method = RequestMethod.GET)
     public ResponseEntity<ResMsg<List<ResAlarm>>> queryAlarms() {
         JwtUser jwtUser = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userRepository.findByEmail(jwtUser.getUsername());
@@ -86,7 +91,7 @@ public class AlarmControllerV1 {
     }
 
     @ApiOperation(value = "查询用户所有设备下的所有已经解决的警报", notes = "查询用户所有设备下的所有已经解决的警报")
-    @RequestMapping(value = "/query/solved", method = RequestMethod.GET)
+    @RequestMapping(value = "/solved", method = RequestMethod.GET)
     public ResponseEntity<ResMsg<List<ResAlarm>>> querySolvedAlarms() {
         JwtUser jwtUser = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userRepository.findByEmail(jwtUser.getUsername());
@@ -99,7 +104,7 @@ public class AlarmControllerV1 {
     }
 
     @ApiOperation(value = "查询用户所有设备下的所有未解决的警报", notes = "查询用户所有设备下的所有未解决的警报")
-    @RequestMapping(value = "/query/unsolved", method = RequestMethod.GET)
+    @RequestMapping(value = "/unsolved", method = RequestMethod.GET)
     public ResponseEntity<ResMsg<List<ResAlarm>>> queryUnsolvedAlarms() {
         JwtUser jwtUser = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userRepository.findByEmail(jwtUser.getUsername());
@@ -139,6 +144,17 @@ public class AlarmControllerV1 {
         } else {
             return ResponseEntity.badRequest().body(new ResMsg(status));
         }
+    }
+
+    @ExceptionHandler(value = {ConstraintViolationException.class})
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ResMsg> handleResourceNotFoundException(ConstraintViolationException e) {
+        Set<ConstraintViolation<?>> violations = e.getConstraintViolations();
+        StringBuilder strBuilder = new StringBuilder();
+        for (ConstraintViolation<?> violation : violations) {
+            strBuilder.append(violation.getMessage() + "\n");
+        }
+        return ResponseEntity.badRequest().body(new ResMsg(strBuilder.toString()));
     }
 
 }

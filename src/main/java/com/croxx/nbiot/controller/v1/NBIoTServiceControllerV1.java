@@ -43,16 +43,20 @@ public class NBIoTServiceControllerV1 {
             String serviceType = reqNBIoTServiceNotify.getService().getServiceType();
             String status = null;
             if (serviceType.equals(ReqNBIoTService.SERVICE_TYPE_BATTERY)) {
-                status = nbIoTDeviceService.updateBatteryByDeviceId(deviceId, reqNBIoTServiceNotify.getService().getBatteryLevel());
+                status = nbIoTDeviceService.updateBatteryByDeviceId(deviceId, reqNBIoTServiceNotify.getService().getBatteryLevel(),
+                        reqNBIoTServiceNotify.getService().getEventTime());
             } else if (serviceType.equals(ReqNBIoTService.SERVICE_TYPE_NETWORK)) {
-                status = nbIoTDeviceService.updateNetworkByDeviceId(deviceId, reqNBIoTServiceNotify.getService().getNetworkQuality());
+                status = nbIoTDeviceService.updateNetworkByDeviceId(deviceId, reqNBIoTServiceNotify.getService().getNetworkQuality(),
+                        reqNBIoTServiceNotify.getService().getEventTime());
             } else if (serviceType.equals(ReqNBIoTService.SERVICE_TYPE_LOCATION)) {
                 status = nbIoTDeviceService.updateLocationByDeviceId(deviceId,
                         reqNBIoTServiceNotify.getService().getLocationLongitude(),
-                        reqNBIoTServiceNotify.getService().getLocationLatitude());
+                        reqNBIoTServiceNotify.getService().getLocationLatitude(),
+                        reqNBIoTServiceNotify.getService().getEventTime());
             } else if (serviceType.equals(ReqNBIoTService.SERVICE_TYPE_CLICK)) {
                 status = nbIoTAlarmService.addNewAlarmByDeviceId(reqNBIoTServiceNotify.getDeviceId(),
-                        reqNBIoTServiceNotify.getService().getClickHoldtime(), reqNBIoTServiceNotify.getService().getEventTime());
+                        reqNBIoTServiceNotify.getService().getClickHoldtime(),
+                        reqNBIoTServiceNotify.getService().getEventTime());
             }
             return ResponseEntity.ok(new ResMsg(status));
         }
