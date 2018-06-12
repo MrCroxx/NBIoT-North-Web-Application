@@ -1,5 +1,11 @@
-package com.croxx.nbiot.test.device.v1;
+package com.croxx.nbiot.test.alarm.v1;
 
+import com.croxx.nbiot.request.ReqJwtUser;
+import com.croxx.nbiot.response.ResAlarm;
+import com.croxx.nbiot.response.ResDevice;
+import com.croxx.nbiot.response.ResJwtAccessToken;
+import com.croxx.nbiot.response.ResMsg;
+import org.apache.http.client.methods.HttpHead;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -14,16 +20,19 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.util.List;
+
 import static com.croxx.nbiot.test.TestSharedObjects.*;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.head;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class DeviceDelete {
+public class AlarmGet {
     @Autowired
     private WebApplicationContext webApplicationContext;
     public MockMvc mockMvc;
@@ -41,15 +50,23 @@ public class DeviceDelete {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", authorization1);
         mockMvc.perform(
-                delete("/v1/device/" + deviceId1).contentType(MediaType.APPLICATION_JSON).headers(headers)
-        ).andExpect(status().isOk());
+                get("/v1/alarm/").contentType(MediaType.APPLICATION_JSON).headers(headers)
+        ).andExpect(status().isOk()).andDo(
+                (mvcResult) -> {
+                    LogResContent(mvcResult, getClass());
+                    String json_str = mvcResult.getResponse().getContentAsString();
+                    ResMsg resMsg = om.readValue(json_str, ResMsg.class);
+                    ResAlarm alarms[] = om.readValue(om.writeValueAsString(resMsg.getContent()), ResAlarm[].class);
+                    alarmId2 = alarms[0].getId();
+                }
+        );
     }
 
     @Test
     public void case01() throws Exception {
         HttpHeaders headers = new HttpHeaders();
         mockMvc.perform(
-                delete("/v1/device/" + deviceId1).contentType(MediaType.APPLICATION_JSON).headers(headers)
+                get("/v1/alarm/").contentType(MediaType.APPLICATION_JSON).headers(headers)
         ).andExpect(status().isForbidden());
     }
 
@@ -58,43 +75,24 @@ public class DeviceDelete {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "wrong_authorization");
         mockMvc.perform(
-                delete("/v1/device/" + deviceId1).contentType(MediaType.APPLICATION_JSON).headers(headers)
+                get("/v1/alarm/").contentType(MediaType.APPLICATION_JSON).headers(headers)
         ).andExpect(status().isForbidden());
     }
 
     @Test
     public void case03() throws Exception {
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", authorization1);
+        headers.set("Authorization", authorization2);
         mockMvc.perform(
-                delete("/v1/device/" + RandomString(4)).contentType(MediaType.APPLICATION_JSON).headers(headers)
-        ).andExpect(status().isBadRequest());
-    }
-
-    @Test
-    public void case04() throws Exception {
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", authorization1);
-        mockMvc.perform(
-                delete("/v1/device/" + RandomString(64)).contentType(MediaType.APPLICATION_JSON).headers(headers)
-        ).andExpect(status().isBadRequest());
-    }
-
-    @Test
-    public void case05() throws Exception {
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", authorization1);
-        mockMvc.perform(
-                delete("/v1/device/" + RandomString(36)).contentType(MediaType.APPLICATION_JSON).headers(headers)
-        ).andExpect(status().isBadRequest());
-    }
-
-    @Test
-    public void case06() throws Exception {
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", authorization1);
-        mockMvc.perform(
-                delete("/v1/device/" + deviceId3).contentType(MediaType.APPLICATION_JSON).headers(headers)
-        ).andExpect(status().isBadRequest());
+                get("/v1/alarm/").contentType(MediaType.APPLICATION_JSON).headers(headers)
+        ).andExpect(status().isOk()).andDo(
+                (mvcResult) -> {
+                    LogResContent(mvcResult, getClass());
+                    String json_str = mvcResult.getResponse().getContentAsString();
+                    ResMsg resMsg = om.readValue(json_str, ResMsg.class);
+                    ResAlarm alarms[] = om.readValue(om.writeValueAsString(resMsg.getContent()), ResAlarm[].class);
+                    alarmId3 = alarms[0].getId();
+                }
+        );
     }
 }

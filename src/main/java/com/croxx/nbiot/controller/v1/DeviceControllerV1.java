@@ -1,13 +1,10 @@
 package com.croxx.nbiot.controller.v1;
 
-import com.croxx.nbiot.model.Device;
 import com.croxx.nbiot.model.JwtUser;
 import com.croxx.nbiot.model.User;
 import com.croxx.nbiot.model.UserRepository;
-import com.croxx.nbiot.request.ReqDevice;
 import com.croxx.nbiot.request.ReqNewDevice;
 import com.croxx.nbiot.response.ResDevice;
-import com.croxx.nbiot.response.ResJwtAccessToken;
 import com.croxx.nbiot.response.ResMsg;
 import com.croxx.nbiot.service.NBIoTDeviceService;
 import io.swagger.annotations.ApiOperation;

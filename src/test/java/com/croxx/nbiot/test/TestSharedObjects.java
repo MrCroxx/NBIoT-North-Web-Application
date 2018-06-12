@@ -22,17 +22,27 @@ public class TestSharedObjects {
     public static String deviceId1;
     public static String deviceId2;
     public static String deviceId3;
+    public static long alarmId2;
+    public static long alarmId3;
 
+    private static Random r;
+
+    static {
+        r = new Random(System.currentTimeMillis());
+    }
 
     public static String RandomString(int length) {
         StringBuffer buffer = new StringBuffer("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
         StringBuffer sb = new StringBuffer();
-        Random r = new Random();
         int range = buffer.length();
         for (int i = 0; i < length; i++) {
             sb.append(buffer.charAt(r.nextInt(range)));
         }
         return sb.toString();
+    }
+
+    public static long RandomLong(int min, int max) {
+        return min + (r.nextLong()) % (max - min);
     }
 
     public static void LogResContent(MvcResult mvcResult, Type type) throws UnsupportedEncodingException {

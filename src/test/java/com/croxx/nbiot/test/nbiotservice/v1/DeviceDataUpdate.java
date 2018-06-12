@@ -117,6 +117,7 @@ public class DeviceDataUpdate {
                 }
         );
     }
+
     @Test
     public void case03() throws Exception {
 
@@ -148,6 +149,31 @@ public class DeviceDataUpdate {
         headers.set("Authorization", authorization1);
         mockMvc.perform(
                 get("/v1/device/" + deviceId2).contentType(MediaType.APPLICATION_JSON).headers(headers)
+        ).andExpect(status().isOk()).andDo(
+                (mvcResult) -> {
+                    LogResContent(mvcResult, getClass());
+                }
+        );
+    }
+
+    @Test
+    public void case05() throws Exception {
+
+        ReqNBIoTServiceNotify request = new ReqNBIoTServiceNotify();
+        ReqNBIoTService service = new ReqNBIoTService();
+        request.setDeviceId(deviceId3);
+        request.setGatewayId(deviceId3);
+        request.setNotifyType("deviceDataChanged");
+        request.setService(service);
+        service.setServiceType(ReqNBIoTService.SERVICE_TYPE_CLICK);
+        service.setServiceId(ReqNBIoTService.SERVICE_TYPE_CLICK);
+        service.setEventTime(null);
+        service.setData(new HashMap<String, String>() {{
+            put("holdtime", "1075838976");
+        }});
+
+        mockMvc.perform(
+                post("/v1/nbiot/deviceDataUpdate").contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsString(request))
         ).andExpect(status().isOk()).andDo(
                 (mvcResult) -> {
                     LogResContent(mvcResult, getClass());

@@ -1,6 +1,7 @@
 package com.croxx.nbiot.test;
 
 import com.croxx.nbiot.model.Device;
+import com.croxx.nbiot.test.alarm.v1.*;
 import com.croxx.nbiot.test.auth.v1.JwtRegister;
 import com.croxx.nbiot.test.auth.v1.JwtAuth;
 import com.croxx.nbiot.test.auth.v1.JwtRefresh;
@@ -26,7 +27,15 @@ import static com.croxx.nbiot.test.TestSharedObjects.*;
         DeviceGet.class,
         DeviceDelete.class,
         DeviceDetail.class,
-        DeviceDataUpdate.class
+        DeviceDataUpdate.class,
+        AlarmGet.class,
+        AlarmSolvedGet.class,
+        AlarmUnsolvedGet.class,
+        AlarmDeviceGet.class,
+        AlarmDeviceSolvedGet.class,
+        AlarmDeviceUnsolvedGet.class,
+        AlarmDetailGet.class,
+        AlarmSolve.class
 })
 public class NbiotApplicationTests {
 
