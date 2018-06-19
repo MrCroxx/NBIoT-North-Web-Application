@@ -67,6 +67,8 @@ public class NBIoTDeviceService {
         if (deviceRepository.findDeviceByNodeIdAndStatus(nodeId, Device.STATUS_ABANDOND) != null) {
             Device device = deviceRepository.findDeviceByNodeIdAndStatus(nodeId, Device.STATUS_ABANDOND);
             device.setStatus(Device.STATUS_ONLINE);
+            device.setOwner(owner);
+            device.setBaseinfoModifiedTime(new Date());
             deviceRepository.save(device);
             ResDevice resDevice = new ResDevice();
             resDevice.setDeviceId(device.getDeviceId());
@@ -80,6 +82,7 @@ public class NBIoTDeviceService {
             RegDirectDeviceInDTO rddid = new RegDirectDeviceInDTO();
             rddid.setNodeId(nodeId);
             rddid.setVerifyCode(nodeId);
+            rddid.setTimeout(0);
             RegDirectDeviceOutDTO rddod = deviceManagement.regDirectDevice(rddid, nbIoTService.getAppId(), nbIoTAuthService.getAccessToken());
             String deviceId = rddod.getDeviceId();
             Device addedDevice = new Device(nodeId, deviceId, owner, name);
@@ -93,11 +96,13 @@ public class NBIoTDeviceService {
             mdiid.setProtocolType(protocolType);
             deviceManagement.modifyDeviceInfo(mdiid, nbIoTService.getAppId(), nbIoTAuthService.getAccessToken());
             addedDevice.setDeviceId(rddod.getDeviceId());
+            addedDevice.setBaseinfoModifiedTime(new Date());
             deviceRepository.save(addedDevice);
             ResDevice resDevice = new ResDevice();
             resDevice.setDeviceId(rddod.getDeviceId());
             resDevice.setName(name);
             resDevice.setNodeId(nodeId);
+            resDevice.setBaseinfoModifiedTime(addedDevice.getBaseinfoModifiedTime());
             return new ResMsg<ResDevice>(resDevice, REGISTER_SUCCESS);
         } catch (NorthApiException nae) {
             nae.printStackTrace();
@@ -154,36 +159,36 @@ public class NBIoTDeviceService {
                 device.getBaseinfoModifiedTime());
     }
 
-    public String updateBatteryByDeviceId(@NotNull String deviceId, @NotNull int level,Date event_time) {
+    public String updateBatteryByDeviceId(@NotNull String deviceId, @NotNull int level, Date event_time) {
         Device device = deviceRepository.findDeviceByDeviceId(deviceId);
         if (device == null) {
             return UPDATE_DEVICEID_NOT_FOUND;
         }
         device.setBatteryLevel(level);
-        device.setBaseinfoModifiedTime((event_time!=null)?(event_time):(new Date()));
+        device.setBaseinfoModifiedTime((event_time != null) ? (event_time) : (new Date()));
         deviceRepository.save(device);
         return UPDATE_SUCCESS;
     }
 
-    public String updateNetworkByDeviceId(@NotNull String deviceId, @NotNull int quality,Date event_time) {
+    public String updateNetworkByDeviceId(@NotNull String deviceId, @NotNull int quality, Date event_time) {
         Device device = deviceRepository.findDeviceByDeviceId(deviceId);
         if (device == null) {
             return UPDATE_DEVICEID_NOT_FOUND;
         }
         device.setNetworkQuality(quality);
-        device.setBaseinfoModifiedTime((event_time!=null)?(event_time):(new Date()));
+        device.setBaseinfoModifiedTime((event_time != null) ? (event_time) : (new Date()));
         deviceRepository.save(device);
         return UPDATE_SUCCESS;
     }
 
-    public String updateLocationByDeviceId(@NotNull String deviceId, @NotNull float longitude, @NotNull float latitude,Date event_time) {
+    public String updateLocationByDeviceId(@NotNull String deviceId, @NotNull float longitude, @NotNull float latitude, Date event_time) {
         Device device = deviceRepository.findDeviceByDeviceId(deviceId);
         if (device == null) {
             return UPDATE_DEVICEID_NOT_FOUND;
         }
         device.setLocationLongitude(longitude);
         device.setLocationLatitude(latitude);
-        device.setBaseinfoModifiedTime((event_time!=null)?(event_time):(new Date()));
+        device.setBaseinfoModifiedTime((event_time != null) ? (event_time) : (new Date()));
         deviceRepository.save(device);
         return UPDATE_SUCCESS;
     }

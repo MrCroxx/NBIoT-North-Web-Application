@@ -58,6 +58,10 @@ public class DeviceDataUpdate {
             put("level", "3");
         }});
 
+        System.out.println("*************************************");
+        System.out.println(om.writeValueAsString(request));
+        System.out.println("*************************************");
+
         mockMvc.perform(
                 post("/v1/nbiot/deviceDataUpdate").contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsString(request))
         ).andExpect(status().isOk()).andDo(
@@ -82,6 +86,10 @@ public class DeviceDataUpdate {
         service.setData(new HashMap<String, String>() {{
             put("quality", "3");
         }});
+
+        System.out.println("*************************************");
+        System.out.println(om.writeValueAsString(request));
+        System.out.println("*************************************");
 
         mockMvc.perform(
                 post("/v1/nbiot/deviceDataUpdate").contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsString(request))
@@ -109,6 +117,10 @@ public class DeviceDataUpdate {
             put("latitude", "1109372436");
         }});
 
+        System.out.println("*************************************");
+        System.out.println(om.writeValueAsString(request));
+        System.out.println("*************************************");
+
         mockMvc.perform(
                 post("/v1/nbiot/deviceDataUpdate").contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsString(request))
         ).andExpect(status().isOk()).andDo(
@@ -133,6 +145,10 @@ public class DeviceDataUpdate {
         service.setData(new HashMap<String, String>() {{
             put("holdtime", "1075838976");
         }});
+
+        System.out.println("*************************************");
+        System.out.println(om.writeValueAsString(request));
+        System.out.println("*************************************");
 
         mockMvc.perform(
                 post("/v1/nbiot/deviceDataUpdate").contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsString(request))
@@ -171,6 +187,10 @@ public class DeviceDataUpdate {
         service.setData(new HashMap<String, String>() {{
             put("holdtime", "1075838976");
         }});
+
+        System.out.println("*************************************");
+        System.out.println(om.writeValueAsString(request));
+        System.out.println("*************************************");
 
         mockMvc.perform(
                 post("/v1/nbiot/deviceDataUpdate").contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsString(request))

@@ -33,6 +33,13 @@ public class NBIoTAlarmService {
         if (device == null)
             return NEW_DEVICEID_NOT_FOUND;
         Alarm alarm = new Alarm(device, holdtime, (dateOfAlarm != null) ? (dateOfAlarm) : (new Date()), device.getLocationLongitude(), device.getLocationLatitude());
+        if (holdtime > 5) {
+            alarm.setRisk(5);
+        } else if (holdtime > 2) {
+            alarm.setRisk(3);
+        } else if (holdtime > 0) {
+            alarm.setRisk(1);
+        }
         alarmRepository.save(alarm);
         return NEW_SUCCESS;
     }

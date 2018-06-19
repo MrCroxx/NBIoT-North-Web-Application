@@ -1,5 +1,7 @@
 package com.croxx.nbiot.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 
@@ -102,6 +104,7 @@ public class ResAlarm {
         this.locationLongitude = locationLongitude;
     }
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     public Date getDateOfAlarm() {
         return dateOfAlarm;
     }
@@ -110,6 +113,7 @@ public class ResAlarm {
         this.dateOfAlarm = dateOfAlarm;
     }
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     public Date getDateOfClear() {
         return dateOfClear;
     }

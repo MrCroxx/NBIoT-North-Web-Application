@@ -1,5 +1,7 @@
 package com.croxx.nbiot.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 
@@ -94,6 +96,7 @@ public class ResDevice {
         this.locationLatitude = locationLatitude;
     }
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     public Date getBaseinfoModifiedTime() {
         return baseinfoModifiedTime;
     }

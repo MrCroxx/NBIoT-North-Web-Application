@@ -28,7 +28,7 @@ public class AuthControllerV1 {
     private AuthService authService;
 
 
-    @ApiOperation(value = "JWT登录鉴权", notes = "通过username(即注册用户的email字段)、password获取access_token(此路由不需要Authorization参数)")
+    @ApiOperation(value = "JWT登录鉴权", notes = "通过username(即注册用户的email字段)、password获取access_token与expiration(此路由不需要Authorization参数)")
     @RequestMapping(value = "/auth", method = RequestMethod.POST)
     @ResponseBody
     public ResponseEntity<ResMsg<ResJwtAccessToken>> createAuthenticationToken(@Valid @RequestBody ReqJwtUser authenticationRequest, BindingResult bindingResult) throws AuthenticationException {
@@ -57,7 +57,7 @@ public class AuthControllerV1 {
         }
     }
 
-    @ApiOperation(value = "用户注册", notes = "用户注册API")
+    @ApiOperation(value = "用户注册", notes = "用户注册接口，需要email、name、password参数。")
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     @ResponseBody
     public ResponseEntity<ResMsg> register(@Valid @RequestBody ReqNewUser reqUser, BindingResult bindingResult) throws AuthenticationException {

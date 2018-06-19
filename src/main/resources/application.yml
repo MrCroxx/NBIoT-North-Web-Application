@@ -25,9 +25,9 @@ spring:
 
 logging:
   level:
-    org.springframework:
-      data: DEBUG
-      security: DEBUG
+    org.springframework: INFO
+    com.croxx.nbiot: INFO
+  file: nbiot.log
 
 jwt:
     header: Authorization
